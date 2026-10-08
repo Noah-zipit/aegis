@@ -537,7 +537,7 @@ const ACCENTS = [
   { name: "Blood", value: "#a1131a" },
 ];
 
-const ENGINES = ["Aegis", "DuckDuckGo", "Brave", "Google"];
+const ENGINES = ["Google", "DuckDuckGo", "Brave", "Bing"];
 
 export function SettingsView() {
   const { state, updateSettings, setView, resetAll, toast } = useBrowser();

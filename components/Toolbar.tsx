@@ -15,7 +15,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useBrowser } from "../lib/store";
+import { useBrowser, searchUrl, metaForPageKey, SEARCH_ENGINES } from "../lib/store";
 import ShieldPanel from "./ShieldPanel";
 
 const DEMO_HOSTS = [
@@ -33,25 +33,34 @@ const VIEW_NAMES: Record<string, string> = {
   settings: "Settings",
 };
 
-function resolveInput(raw: string): string {
+type Resolved =
+  | { pageKey: string }
+  | { external: { url: string; title: string } };
+
+function engineLabel(engine?: string): string {
+  return engine && SEARCH_ENGINES[engine] ? engine : "Google";
+}
+
+function resolveInput(raw: string, engine?: string): Resolved {
   const q = raw.trim();
-  if (!q) return "newtab";
+  if (!q) return { pageKey: "newtab" };
   const lower = q.toLowerCase();
   if (["history", "bookmarks", "downloads", "privacy", "about", "settings"].includes(lower))
-    return `view:${lower}`;
+    return { pageKey: `view:${lower}` };
   for (const d of DEMO_HOSTS) {
-    if (lower.includes(d.host)) return d.pageKey;
+    if (lower.includes(d.host)) return { pageKey: d.pageKey };
   }
   if (/^[\w-]+(\.[\w-]+)+(\/.*)?$/.test(lower) && !lower.includes(" ")) {
-    // Looks like a URL. Only our demo hosts resolve in the prototype;
-    // anything else becomes a search so nothing dead-ends.
-    return `search:${encodeURIComponent(q)}`;
+    // Looks like a URL — navigate to the real site, like a browser.
+    const url = /^https?:\/\//i.test(q) ? q : `https://${q}`;
+    return { external: { url, title: lower.split("/")[0] } };
   }
-  return `search:${encodeURIComponent(q)}`;
+  const eng = engineLabel(engine);
+  return { external: { url: searchUrl(q, engine), title: `${q} — ${eng}` } };
 }
 
 function AddressBar({ mobile = false }: { mobile?: boolean }) {
-  const { activeTab, navigate, openTab, state, setCommandOpen } = useBrowser();
+  const { activeTab, navigate, openTab, visitExternal, state, setCommandOpen } = useBrowser();
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -110,14 +119,36 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
 
   const go = (pageKey: string) => {
     setFocused(false);
+    if (pageKey.startsWith("ext:")) {
+      const m = metaForPageKey(pageKey);
+      visitExternal(m.url, m.title);
+      return;
+    }
     if (!activeTab) openTab(pageKey);
     else navigate(pageKey);
   };
 
+  const goSearch = (query: string) => {
+    const q = query.trim();
+    if (!q) return;
+    setFocused(false);
+    const eng = engineLabel(state.settings.searchEngine);
+    visitExternal(searchUrl(q, state.settings.searchEngine), `${q} — ${eng}`);
+  };
+
   const submit = () => {
     const list = suggestions.slice(0, 7);
-    if (focused && list[highlight]) go(list[highlight].pageKey);
-    else go(resolveInput(value));
+    if (focused && list[highlight]) {
+      const sel = list[highlight];
+      if (sel.kind === "search") goSearch(value);
+      else go(sel.pageKey);
+      return;
+    }
+    const r = resolveInput(value, state.settings.searchEngine);
+    if ("external" in r) {
+      setFocused(false);
+      visitExternal(r.external.url, r.external.title);
+    } else go(r.pageKey);
   };
 
   return (

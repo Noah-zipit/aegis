@@ -253,82 +253,11 @@ export function FoundryStudio() {
   );
 }
 
-export function SearchResults({ query }: { query: string }) {
-  const { openTab, toast } = useBrowser();
-  const results = [
-    {
-      title: "The quiet rebellion against the 250MB browser — The Meridian",
-      url: "meridian.press/quiet-rebellion",
-      pageKey: "demo:meridian",
-      snippet:
-        "Somewhere along the way, the web browser became the heaviest thing on your phone. A look at the indie browsers fighting back…",
-    },
-    {
-      title: "Aura One — Wireless Headphones — Aura Audio",
-      url: "aura.audio/products/aura-one",
-      pageKey: "demo:aura",
-      snippet:
-        "Forty hours of listening, studio-tuned 40mm drivers, and memory foam that forgets it's there. $289.",
-    },
-    {
-      title: "Foundry — Brand & Digital Studio",
-      url: "foundry.studio",
-      pageKey: "demo:foundry",
-      snippet:
-        "Identity, websites, and interfaces for teams that would rather be remembered than merely seen.",
-    },
-  ];
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className="mx-auto max-w-2xl px-6 py-10"
-    >
-      <p className="text-sm text-mist-500">
-        About {results.length} demo results for{" "}
-        <span className="text-mist-100">“{query}”</span>
-      </p>
-      <p className="mt-1 font-mono text-xs text-mist-600">
-        Prototype search — external web results are simulated
-      </p>
-      <div className="mt-6 space-y-6">
-        {results.map((r) => (
-          <button
-            key={r.pageKey}
-            onClick={() => openTab(r.pageKey)}
-            className="block w-full text-left"
-          >
-            <p className="font-mono text-xs text-mist-500">{r.url}</p>
-            <h3
-              className="mt-1 text-lg font-medium hover:underline"
-              style={{ color: "var(--accent)" }}
-            >
-              {r.title}
-            </h3>
-            <p className="mt-1 text-sm leading-relaxed text-mist-500">
-              {r.snippet}
-            </p>
-          </button>
-        ))}
-      </div>
-      <button
-        onClick={() => toast("No more demo results for this query")}
-        className="mt-8 rounded-lg border border-ink-600 px-4 py-2 text-sm text-mist-300 transition hover:border-mist-600"
-      >
-        Load more results
-      </button>
-    </motion.div>
-  );
-}
-
 /* Registry: pageKey -> rendered component */
 export function PageRenderer({ pageKey }: { pageKey: string }) {
   if (pageKey === "newtab") return null; // handled by NewTab component
   if (pageKey === "demo:meridian") return <MeridianArticle />;
   if (pageKey === "demo:aura") return <AuraProduct />;
   if (pageKey === "demo:foundry") return <FoundryStudio />;
-  if (pageKey.startsWith("search:"))
-    return <SearchResults query={decodeURIComponent(pageKey.slice(7))} />;
   return null;
 }

@@ -88,10 +88,22 @@ export interface Toast {
 
 /* ---------------- page-key helpers ----------------
    pageKey encodes what a tab shows:
-   "newtab" | "demo:<site>" | "search:<query>" | "view:<key>"
-   Real external sites are simulated in this prototype — real
-   websites send X-Frame-Options / CSP headers that block iframes,
-   so the prototype renders built-in demo pages instead. */
+   "newtab" | "demo:<site>" | "view:<key>" | "ext:<encoded-url>"
+   "ext:" entries represent real external pages — the prototype performs a
+   real top-level navigation for them, exactly like a browser. */
+
+/* Real search engines. The Settings choice maps straight to these. */
+export const SEARCH_ENGINES: Record<string, string> = {
+  Google: "https://www.google.com/search?q=",
+  DuckDuckGo: "https://duckduckgo.com/?q=",
+  Brave: "https://search.brave.com/search?q=",
+  Bing: "https://www.bing.com/search?q=",
+};
+
+export function searchUrl(query: string, engine?: string): string {
+  const base = (engine && SEARCH_ENGINES[engine]) || SEARCH_ENGINES.Google;
+  return `${base}${encodeURIComponent(query)}`;
+}
 
 export function metaForPageKey(pageKey: string): {
   title: string;
@@ -121,13 +133,15 @@ export function metaForPageKey(pageKey: string): {
         dot: "#6b9bd1",
       };
   }
-  if (pageKey.startsWith("search:")) {
-    const q = decodeURIComponent(pageKey.slice(7));
-    return {
-      title: `${q} — Aegis Search`,
-      url: `aegis:search?q=${encodeURIComponent(q)}`,
-      dot: "#8e8e99",
-    };
+  if (pageKey.startsWith("ext:")) {
+    const url = decodeURIComponent(pageKey.slice(4));
+    let host = url;
+    try {
+      host = new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      /* keep raw url as title fallback */
+    }
+    return { title: host, url, dot: "#8e8e99" };
   }
   if (pageKey.startsWith("view:")) {
     const v = pageKey.slice(5);
@@ -186,7 +200,7 @@ interface Persisted {
 
 const DEFAULT_SETTINGS: Settings = {
   accent: "#ff5757",
-  searchEngine: "Aegis",
+  searchEngine: "Google",
   adBlock: true,
   trackerBlock: true,
   noPrefetch: true,
@@ -289,6 +303,8 @@ interface BrowserApi {
   activeTab: TabState | null;
 
   openTab: (pageKey: string, opts?: { pinned?: boolean; switchTo?: boolean }) => void;
+  /** Real top-level navigation, like a browser: records history, then leaves. */
+  visitExternal: (url: string, title?: string) => void;
   closeTab: (tabId: string) => void;
   switchTab: (tabId: string) => void;
   pinTab: (tabId: string) => void;
@@ -426,8 +442,41 @@ export function BrowserProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const visitExternal = useCallback(
+    (url: string, title?: string) => {
+      const meta = metaForPageKey(`ext:${encodeURIComponent(url)}`);
+      setState((st) => {
+        const last = st.history[0];
+        const dup = last && last.url === url;
+        return {
+          ...st,
+          history: dup
+            ? st.history
+            : [
+                {
+                  id: uid(),
+                  title: title || meta.title,
+                  url,
+                  pageKey: `ext:${encodeURIComponent(url)}`,
+                  ts: Date.now(),
+                },
+                ...st.history,
+              ].slice(0, 300),
+        };
+      });
+      bumpStats();
+      window.location.href = url;
+    },
+    [bumpStats]
+  );
+
   const openTab = useCallback(
     (pageKey: string, opts?: { pinned?: boolean; switchTo?: boolean }) => {
+      if (pageKey.startsWith("ext:")) {
+        const url = decodeURIComponent(pageKey.slice(4));
+        visitExternal(url);
+        return;
+      }
       const tab = makeTab(
         pageKey,
         opts?.pinned
@@ -449,7 +498,7 @@ export function BrowserProvider({ children }: { children: React.ReactNode }) {
         bumpStats();
       }
     },
-    [activeSpace.id, patchSpace, addHistory, bumpStats]
+    [activeSpace.id, patchSpace, addHistory, bumpStats, visitExternal]
   );
 
   const closeTab = useCallback(
@@ -746,6 +795,7 @@ export function BrowserProvider({ children }: { children: React.ReactNode }) {
       activeSpace,
       activeTab,
       openTab,
+      visitExternal,
       closeTab,
       switchTab,
       pinTab,
@@ -774,7 +824,7 @@ export function BrowserProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       state, view, commandOpen, overviewOpen, shieldOpen, sidebarCollapsed,
-      toasts, toast, activeSpace, activeTab, openTab, closeTab, switchTab,
+      toasts, toast, activeSpace, activeTab, openTab, visitExternal, closeTab, switchTab,
       pinTab, navigate, goBack, goForward, reorderTabs, restoreClosedTab,
       archiveTab, restoreArchived, closeAllTabs, switchSpace, addHistory,
       clearHistory, deleteHistoryItem, addBookmark, removeBookmark,
