@@ -13,7 +13,7 @@ import type {
 /*  WebGPU. No API keys, no server, nothing leaves the device.         */
 /* ------------------------------------------------------------------ */
 
-export const AI_MODEL_ID = "SmolLM2-360M-Instruct-q4f16_1";
+export const AI_MODEL_ID = "SmolLM2-360M-Instruct-q4f16_1-MLC";
 /** Approximate one-time download size, shown honestly in the UI. */
 export const AI_MODEL_SIZE_MB = 300;
 
