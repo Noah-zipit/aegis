@@ -36,7 +36,8 @@ const VIEW_NAMES: Record<string, string> = {
 
 type Resolved =
   | { pageKey: string }
-  | { external: { url: string; title: string } };
+  | { external: { url: string; title: string } }
+  | { inAppSearch: string };
 
 function engineLabel(engine?: string): string {
   return engine && SEARCH_ENGINES[engine] ? engine : "Google";
@@ -56,6 +57,9 @@ function resolveInput(raw: string, engine?: string): Resolved {
     const url = /^https?:\/\//i.test(q) ? q : `https://${q}`;
     return { external: { url, title: lower.split("/")[0] } };
   }
+  // Brave engine renders results natively in-app (API key prompted inline
+  // inside the results tab if missing).
+  if (engineLabel(engine) === "Brave") return { inAppSearch: q };
   const eng = engineLabel(engine);
   return { external: { url: searchUrl(q, engine), title: `${q} — ${eng}` } };
 }
@@ -129,12 +133,23 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
     else navigate(pageKey);
   };
 
+  const goInAppSearch = (query: string) => {
+    const pk = `search:${encodeURIComponent(query)}`;
+    if (!activeTab) openTab(pk);
+    else navigate(pk);
+  };
+
   const goSearch = (query: string) => {
     const q = query.trim();
     if (!q) return;
     setFocused(false);
-    const eng = engineLabel(state.settings.searchEngine);
-    visitExternal(searchUrl(q, state.settings.searchEngine), `${q} — ${eng}`);
+    const engine = state.settings.searchEngine;
+    if (engineLabel(engine) === "Brave") {
+      goInAppSearch(q);
+      return;
+    }
+    const eng = engineLabel(engine);
+    visitExternal(searchUrl(q, engine), `${q} — ${eng}`);
   };
 
   const submit = () => {
@@ -146,7 +161,10 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
       return;
     }
     const r = resolveInput(value, state.settings.searchEngine);
-    if ("external" in r) {
+    if ("inAppSearch" in r) {
+      setFocused(false);
+      goInAppSearch(r.inAppSearch);
+    } else if ("external" in r) {
       setFocused(false);
       visitExternal(r.external.url, r.external.title);
     } else go(r.pageKey);

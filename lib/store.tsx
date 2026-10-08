@@ -60,6 +60,7 @@ export interface DownloadItem {
 export interface Settings {
   accent: string;
   searchEngine: string;
+  braveApiKey: string;
   adBlock: boolean;
   trackerBlock: boolean;
   noPrefetch: boolean;
@@ -89,8 +90,11 @@ export interface Toast {
 /* ---------------- page-key helpers ----------------
    pageKey encodes what a tab shows:
    "newtab" | "demo:<site>" | "view:<key>" | "ext:<encoded-url>"
+   | "search:<encoded-query>"
    "ext:" entries represent real external pages — the prototype performs a
-   real top-level navigation for them, exactly like a browser. */
+   real top-level navigation for them, exactly like a browser.
+   "search:" entries render Brave Search results natively in-app (needs a
+   Brave Search API key in Settings). */
 
 /* Real search engines. The Settings choice maps straight to these. */
 export const SEARCH_ENGINES: Record<string, string> = {
@@ -132,6 +136,14 @@ export function metaForPageKey(pageKey: string): {
         url: "https://foundry.studio",
         dot: "#6b9bd1",
       };
+  }
+  if (pageKey.startsWith("search:")) {
+    const q = decodeURIComponent(pageKey.slice(7));
+    return {
+      title: `"${q}" — Brave`,
+      url: `aegis:search:${encodeURIComponent(q)}`,
+      dot: "#ff5757",
+    };
   }
   if (pageKey.startsWith("ext:")) {
     const url = decodeURIComponent(pageKey.slice(4));
@@ -201,6 +213,7 @@ interface Persisted {
 const DEFAULT_SETTINGS: Settings = {
   accent: "#ff5757",
   searchEngine: "Google",
+  braveApiKey: "",
   adBlock: true,
   trackerBlock: true,
   noPrefetch: true,
@@ -276,7 +289,12 @@ function load(): Persisted {
     if (!raw) return defaultPersisted();
     const parsed = JSON.parse(raw) as Persisted;
     if (!parsed.spaces || !parsed.settings) return defaultPersisted();
-    return { ...defaultPersisted(), ...parsed };
+    const base = defaultPersisted();
+    return {
+      ...base,
+      ...parsed,
+      settings: { ...base.settings, ...parsed.settings },
+    };
   } catch {
     return defaultPersisted();
   }

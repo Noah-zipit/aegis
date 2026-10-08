@@ -592,6 +592,51 @@ export function SettingsView() {
             </button>
           ))}
         </div>
+        <div className="mt-4 border-t border-ink-600 pt-4">
+          <label
+            htmlFor="brave-key"
+            className="text-sm font-medium text-mist-100"
+          >
+            Brave Search API key
+          </label>
+          <p className="mt-1 text-xs leading-relaxed text-mist-500">
+            Powers in-app results when Brave is your engine. Free — 2,000
+            searches/month. Stored only on this device, sent only to Brave.{" "}
+            <a
+              href="https://brave.com/search/api/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-mist-600 underline-offset-2 hover:text-mist-300"
+            >
+              Get a free key
+            </a>
+          </p>
+          <input
+            id="brave-key"
+            type="password"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder={s.braveApiKey ? "••••••••••••••••" : "Paste your key here"}
+            defaultValue={s.braveApiKey}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v !== s.braveApiKey) {
+                updateSettings({ braveApiKey: v });
+                toast(v ? "Brave API key saved" : "Brave API key removed");
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+            }}
+            className="mt-2 w-full rounded-xl border border-ink-600 bg-ink-800 px-3 py-2.5 font-mono text-sm text-mist-100 placeholder:text-mist-600 focus:border-mist-500 focus:outline-none"
+          />
+          {s.searchEngine === "Brave" && !s.braveApiKey && (
+            <p className="mt-2 text-xs leading-relaxed text-mist-400">
+              Brave is your engine but no key is set — searches will ask for
+              the key before showing results.
+            </p>
+          )}
+        </div>
       </div>
 
       <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">

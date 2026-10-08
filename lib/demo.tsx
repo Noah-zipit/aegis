@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Download, Bell, ArrowRight, ShieldCheck, Zap, Eye } from "lucide-react";
 import { useBrowser } from "./store";
+import SearchResults from "../components/SearchResults";
 
 /* ------------------------------------------------------------------ */
 /*  Simulated websites. In this prototype real external sites are NOT  */
@@ -259,5 +260,12 @@ export function PageRenderer({ pageKey }: { pageKey: string }) {
   if (pageKey === "demo:meridian") return <MeridianArticle />;
   if (pageKey === "demo:aura") return <AuraProduct />;
   if (pageKey === "demo:foundry") return <FoundryStudio />;
+  if (pageKey.startsWith("search:"))
+    return (
+      <SearchResults
+        key={pageKey}
+        query={decodeURIComponent(pageKey.slice(7))}
+      />
+    );
   return null;
 }
