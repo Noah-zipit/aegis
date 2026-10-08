@@ -17,6 +17,7 @@ import {
   Settings as SettingsIcon,
 } from "lucide-react";
 import { useBrowser, type TabState } from "../lib/store";
+import { ShieldMark } from "./ShieldMark";
 
 function TabRow({
   tab,
@@ -141,10 +142,10 @@ export default function Sidebar() {
           <Plus size={18} />
         </button>
         <div
-          className="logo-mark mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
+          className="logo-mark mt-1 flex h-8 w-8 items-center justify-center rounded-lg"
           aria-hidden
         >
-          A
+          <ShieldMark size={20} />
         </div>
       </div>
     );
@@ -162,10 +163,10 @@ export default function Sidebar() {
       <div className="flex items-center justify-between px-4 pb-2 pt-4">
         <div className="flex items-center gap-2.5">
           <div
-            className="logo-mark flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
+            className="logo-mark flex h-8 w-8 items-center justify-center rounded-lg"
             aria-hidden
           >
-            A
+            <ShieldMark size={20} />
           </div>
           <div>
             <p className="text-sm font-semibold leading-none text-mist-100">

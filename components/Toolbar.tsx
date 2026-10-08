@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Bookmark,
+  Layers,
   LayoutGrid,
   MoreVertical,
   RotateCw,
@@ -411,11 +412,14 @@ export function MobileToolbar() {
         </button>
         <button
           onClick={() => openTab("newtab")}
-          aria-label="New tab"
+          aria-label={`New tab — ${activeSpace.tabs.length} open`}
           className={btn}
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-md border border-mist-500 text-[11px] font-semibold">
-            {activeSpace.tabs.length}
+          <span className="relative inline-flex">
+            <Layers size={20} />
+            <span className="absolute -right-1.5 -top-1.5 font-mono text-[10px] leading-none text-mist-400">
+              {activeSpace.tabs.length}
+            </span>
           </span>
         </button>
         <button onClick={() => setOverviewOpen(true)} aria-label="Tab overview" className={btn}>

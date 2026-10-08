@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useBrowser, type ViewKey } from "../lib/store";
+import { ShieldMark } from "./ShieldMark";
 
 /* ---------------- shared bits ---------------- */
 
@@ -458,10 +459,10 @@ export function AboutView() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 md:px-6">
       <div
-        className="logo-mark flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold"
+        className="logo-mark flex h-16 w-16 items-center justify-center rounded-xl"
         aria-hidden
       >
-        A
+        <ShieldMark size={38} />
       </div>
       <h2 className="mt-5 text-2xl font-semibold text-mist-100">Aegis</h2>
       <p className="font-mono text-xs text-mist-600">Prototype v0 · UI/UX preview</p>

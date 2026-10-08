@@ -18,6 +18,7 @@ import {
   SettingsView,
 } from "../components/views";
 import { Menu } from "lucide-react";
+import { ShieldMark } from "../components/ShieldMark";
 
 function Toasts() {
   const { toasts } = useBrowser();
@@ -102,10 +103,10 @@ function Content() {
             <Menu size={20} />
           </button>
           <div
-            className="logo-mark flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold"
+            className="logo-mark flex h-7 w-7 items-center justify-center rounded-lg"
             aria-hidden
           >
-            A
+            <ShieldMark size={17} />
           </div>
           <p className="text-sm font-semibold text-mist-100">Aegis</p>
         </div>
