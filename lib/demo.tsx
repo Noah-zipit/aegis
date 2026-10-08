@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Download, Bell, ArrowRight, ShieldCheck, Zap, Eye } from "lucide-react";
 import { useBrowser } from "./store";
 import SearchResults from "../components/SearchResults";
+import AIChat from "../components/AIChat";
 
 /* ------------------------------------------------------------------ */
 /*  Simulated websites. In this prototype real external sites are NOT  */
@@ -257,6 +258,7 @@ export function FoundryStudio() {
 /* Registry: pageKey -> rendered component */
 export function PageRenderer({ pageKey }: { pageKey: string }) {
   if (pageKey === "newtab") return null; // handled by NewTab component
+  if (pageKey === "ai") return <AIChat key="ai" />;
   if (pageKey === "demo:meridian") return <MeridianArticle />;
   if (pageKey === "demo:aura") return <AuraProduct />;
   if (pageKey === "demo:foundry") return <FoundryStudio />;

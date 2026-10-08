@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useBrowser, searchUrl, metaForPageKey, SEARCH_ENGINES } from "../lib/store";
+import { useKeyboardHeight } from "../lib/useKeyboard";
 import ShieldPanel from "./ShieldPanel";
 
 const DEMO_HOSTS = [
@@ -70,6 +71,10 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
   const [focused, setFocused] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+  // When the keyboard lifts the bottom toolbar, suggestions open upward
+  // so they stay visible above the keyboard instead of under it.
+  const kb = useKeyboardHeight();
+  const dropUp = mobile && kb > 0;
 
   // Reset the input when switching tabs (adjust-during-render pattern —
   // only resets on tab change, never while the user is typing).
@@ -223,11 +228,13 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
       <AnimatePresence>
         {focused && suggestions.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: -4 }}
+            initial={{ opacity: 0, y: dropUp ? 4 : -4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
+            exit={{ opacity: 0, y: dropUp ? 4 : -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-xl border border-ink-600 bg-ink-850"
+            className={`absolute left-0 right-0 z-50 overflow-hidden rounded-xl border border-ink-600 bg-ink-850 ${
+              dropUp ? "bottom-full mb-1.5" : "top-full mt-1.5"
+            }`}
             role="listbox"
             aria-label="Address bar suggestions"
           >
@@ -408,9 +415,21 @@ export function MobileToolbar() {
   const canFwd = !!activeTab && activeTab.idx < activeTab.stack.length - 1;
   const btn =
     "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-mist-300 transition active:bg-ink-800 disabled:opacity-30";
+  // Google-app style: while the Android keyboard is open, lift the whole
+  // bottom toolbar above it so the address bar stays visible and tappable.
+  // (With interactive-widget=resizes-content the layout already shrinks and
+  // this is a no-op; this is the fallback for browsers that ignore it.)
+  const kb = useKeyboardHeight();
 
   return (
-    <div className="relative border-t border-ink-600 bg-ink-900 px-2 pb-[env(safe-area-inset-bottom)] pt-1 md:hidden">
+    <div
+      className="relative border-t border-ink-600 bg-ink-900 px-2 pb-[env(safe-area-inset-bottom)] pt-1 md:hidden"
+      style={
+        kb > 0
+          ? { transform: `translateY(${-kb}px)`, transition: "transform 0.22s ease-out" }
+          : { transition: "transform 0.22s ease-out" }
+      }
+    >
       <div className="mb-1 px-1">
         <AddressBar mobile />
       </div>

@@ -90,11 +90,12 @@ export interface Toast {
 /* ---------------- page-key helpers ----------------
    pageKey encodes what a tab shows:
    "newtab" | "demo:<site>" | "view:<key>" | "ext:<encoded-url>"
-   | "search:<encoded-query>"
+   | "search:<encoded-query>" | "ai"
    "ext:" entries represent real external pages — the prototype performs a
    real top-level navigation for them, exactly like a browser.
    "search:" entries render Brave Search results natively in-app (needs a
-   Brave Search API key in Settings). */
+   Brave Search API key in Settings).
+   "ai" renders the on-device Aegis AI chat (WebLLM + SmolLM2-360M). */
 
 /* Real search engines. The Settings choice maps straight to these. */
 export const SEARCH_ENGINES: Record<string, string> = {
@@ -116,6 +117,8 @@ export function metaForPageKey(pageKey: string): {
 } {
   if (pageKey === "newtab")
     return { title: "New Tab", url: "aegis:newtab", dot: "#8e8e99" };
+  if (pageKey === "ai")
+    return { title: "Aegis AI", url: "aegis:ai", dot: "#ff5757" };
   if (pageKey.startsWith("demo:")) {
     const site = pageKey.slice(5);
     if (site === "meridian")

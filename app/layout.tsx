@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   description:
     "Aegis is a lightweight, privacy-first mobile browser concept with built-in tracker and ad blocking. UI/UX prototype v0.",
   icons: { icon: "/favicon.svg" },
+};
+
+/* Lets the Android keyboard shrink the layout instead of covering it, so
+   the bottom toolbar and chat inputs stay visible while typing. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

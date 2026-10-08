@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
+import { Clock, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useBrowser } from "../lib/store";
 
@@ -113,6 +113,20 @@ export default function NewTab() {
           Shield is up — see what Aegis blocked today
         </button>
       </motion.div>
+
+      {/* floating entry point to the on-device AI chat */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.35, type: "spring", stiffness: 380, damping: 26 }}
+        onClick={() => openTab("ai")}
+        aria-label="Open Aegis AI chat"
+        title="Aegis AI — on-device chat"
+        className="fixed bottom-32 right-4 z-40 flex h-13 w-13 items-center justify-center rounded-full text-ink-950 shadow-[0_8px_28px_rgba(255,87,87,0.35)] transition active:scale-95 md:bottom-10 md:right-8"
+        style={{ background: "var(--brand-gradient)" }}
+      >
+        <Sparkles size={22} aria-hidden />
+      </motion.button>
     </div>
   );
 }

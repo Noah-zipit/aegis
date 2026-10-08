@@ -56,14 +56,10 @@ export default function CommandBar() {
     () => [
       {
         id: "ai",
-        label: "Aegis AI — ask about this page",
-        hint: "Coming soon",
+        label: "Aegis AI — on-device chat",
+        hint: "Offline",
         icon: Sparkles,
-        disabled: true,
-        // INTEGRATION POINT: the on-device AI chat plugs in here later.
-        // When the llama.cpp model pack ships, replace this stub with a
-        // real action that opens the AI panel for the active tab.
-        run: () => {},
+        run: () => { openTab("ai"); setCommandOpen(false); },
       },
       { id: "newtab", label: "New tab", icon: Plus, run: () => { openTab("newtab"); setCommandOpen(false); } },
       { id: "history", label: "Go to History", icon: History, run: goView("history") },
