@@ -1,69 +1,181 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import { BrowserProvider, useBrowser, type ViewKey } from "../lib/store";
+import { PageRenderer } from "../lib/demo";
+import Sidebar from "../components/Sidebar";
+import { DesktopToolbar, MobileToolbar, ViewTopBar, VIEW_NAMES } from "../components/Toolbar";
+import CommandBar from "../components/CommandBar";
+import TabOverview from "../components/TabOverview";
+import NewTab from "../components/NewTab";
+import {
+  HistoryView,
+  BookmarksView,
+  DownloadsView,
+  PrivacyView,
+  AboutView,
+  SettingsView,
+} from "../components/views";
+import { Menu } from "lucide-react";
+
+function Toasts() {
+  const { toasts } = useBrowser();
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="pointer-events-none fixed bottom-20 left-1/2 z-[90] flex -translate-x-1/2 flex-col items-center gap-2 md:bottom-8" aria-live="polite">
+      <AnimatePresence>
+        {toasts.map((t) => (
+          <motion.div
+            key={t.id}
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-xl border border-ink-700 bg-ink-800 px-4 py-2.5 text-sm text-mist-100 shadow-xl shadow-black/50"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {t.message}
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
+  );
+}
+
+function MobileDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/60 md:hidden"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 380, damping: 40 }}
+            className="fixed bottom-0 left-0 top-0 z-[61] w-72 md:hidden [&>aside]:h-full [&>aside]:w-full"
+          >
+            <Sidebar />
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function Content() {
+  const { view, activeTab } = useBrowser();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const renderView = (v: ViewKey) => {
+    switch (v) {
+      case "history": return <HistoryView />;
+      case "bookmarks": return <BookmarksView />;
+      case "downloads": return <DownloadsView />;
+      case "privacy": return <PrivacyView />;
+      case "about": return <AboutView />;
+      case "settings": return <SettingsView />;
+    }
+  };
+
+  return (
+    <div className="flex h-dvh overflow-hidden bg-ink-950">
+      {/* desktop sidebar */}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* mobile top strip */}
+        <div className="flex items-center gap-1 border-b border-ink-800 px-2 py-1.5 md:hidden">
+          <button
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open navigation"
+            className="rounded-lg p-2.5 text-mist-300 transition active:bg-ink-800"
+          >
+            <Menu size={20} />
+          </button>
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-ink-950"
+            style={{ background: "var(--accent)" }}
+            aria-hidden
+          >
+            A
+          </div>
+          <p className="text-sm font-semibold text-mist-100">Aegis</p>
+        </div>
+
+        {view === null ? (
+          <>
+            <DesktopToolbar />
+            <main className="min-h-0 flex-1 p-0 md:p-2 md:pl-0" aria-label="Page content">
+              <div className="h-full overflow-y-auto bg-ink-950 md:rounded-2xl md:border md:border-ink-800 md:bg-ink-900">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab ? activeTab.pageKey + activeTab.idx : "empty"}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="min-h-full"
+                  >
+                    {activeTab ? (
+                      activeTab.pageKey === "newtab" ? (
+                        <NewTab />
+                      ) : (
+                        <PageRenderer pageKey={activeTab.pageKey} />
+                      )
+                    ) : (
+                      <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+                        <p className="text-lg font-semibold text-mist-100">No tabs open</p>
+                        <p className="mt-1 text-sm text-mist-500">
+                          Open a tab from the sidebar to start browsing.
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </main>
+            <MobileToolbar />
+          </>
+        ) : (
+          <>
+            <ViewTopBar title={VIEW_NAMES[view]} />
+            <main className="min-h-0 flex-1 overflow-y-auto" aria-label={VIEW_NAMES[view]}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={view}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  {renderView(view)}
+                </motion.div>
+              </AnimatePresence>
+            </main>
+          </>
+        )}
+      </div>
+
+      <CommandBar />
+      <TabOverview />
+      <Toasts />
+    </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <BrowserProvider>
+      <Content />
+    </BrowserProvider>
   );
 }
