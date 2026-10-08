@@ -19,7 +19,7 @@ function useClock() {
 }
 
 const QUICK_LINKS = [
-  { label: "The Meridian", sub: "meridian.press", pageKey: "demo:meridian", dot: "#d9a441" },
+  { label: "The Meridian", sub: "meridian.press", pageKey: "demo:meridian", dot: "#ff5757" },
   { label: "Aura Audio", sub: "aura.audio", pageKey: "demo:aura", dot: "#4cc9b0" },
   { label: "Foundry", sub: "foundry.studio", pageKey: "demo:foundry", dot: "#6b9bd1" },
 ];
@@ -62,7 +62,7 @@ export default function NewTab() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
               onClick={() => openTab(l.pageKey)}
-              className="rounded-2xl border border-ink-800 bg-ink-900/80 p-4 text-left transition hover:border-ink-600 hover:bg-ink-800"
+              className="rounded-xl border border-ink-600 bg-ink-900/80 p-4 text-left transition hover:border-ink-600 hover:bg-ink-800"
             >
               <span
                 className="mb-2.5 block h-2 w-2 rounded-full"

@@ -31,7 +31,7 @@ function Toasts() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="rounded-xl border border-ink-700 bg-ink-800 px-4 py-2.5 text-sm text-mist-100 shadow-xl shadow-black/50"
+            className="rounded-xl border border-ink-600 bg-ink-800 px-4 py-2.5 text-sm text-mist-100"
           >
             {t.message}
           </motion.div>
@@ -93,7 +93,7 @@ function Content() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* mobile top strip */}
-        <div className="flex items-center gap-1 border-b border-ink-800 px-2 py-1.5 md:hidden">
+        <div className="flex items-center gap-1 border-b border-ink-600 px-2 py-1.5 md:hidden">
           <button
             onClick={() => setDrawerOpen(true)}
             aria-label="Open navigation"
@@ -102,8 +102,7 @@ function Content() {
             <Menu size={20} />
           </button>
           <div
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-ink-950"
-            style={{ background: "var(--accent)" }}
+            className="logo-mark flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold"
             aria-hidden
           >
             A
@@ -115,7 +114,7 @@ function Content() {
           <>
             <DesktopToolbar />
             <main className="min-h-0 flex-1 p-0 md:p-2 md:pl-0" aria-label="Page content">
-              <div className="h-full overflow-y-auto bg-ink-950 md:rounded-2xl md:border md:border-ink-800 md:bg-ink-900">
+              <div className="h-full overflow-y-auto bg-ink-950 md:rounded-xl md:border md:border-ink-600 md:bg-ink-900">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab ? activeTab.pageKey + activeTab.idx : "empty"}

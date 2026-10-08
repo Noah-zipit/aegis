@@ -112,7 +112,7 @@ export function AuraProduct() {
         Aura Audio
       </p>
       <div className="mt-6 grid gap-10 md:grid-cols-2">
-        <div className="flex aspect-square items-center justify-center rounded-2xl bg-ink-800">
+        <div className="flex aspect-square items-center justify-center rounded-xl bg-ink-800">
           <div className="relative">
             <div
               className="h-44 w-44 rounded-full border-[10px] border-ink-600"
@@ -195,7 +195,7 @@ export function AuraProduct() {
             body: "A soundstage wide enough to place every instrument in the room.",
           },
         ].map((f) => (
-          <div key={f.title} className="rounded-2xl bg-ink-800 p-6">
+          <div key={f.title} className="rounded-xl bg-ink-800 p-6">
             <f.icon size={20} style={{ color: "var(--accent)" }} />
             <h3 className="mt-3 font-semibold text-mist-100">{f.title}</h3>
             <p className="mt-1 text-sm leading-relaxed text-mist-500">
@@ -229,7 +229,7 @@ export function FoundryStudio() {
       </p>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {[
-          { name: "Halcyon Bank", tag: "Identity / Web", tone: "#d9a441" },
+          { name: "Halcyon Bank", tag: "Identity / Web", tone: "#ff5757" },
           { name: "Northwind Air", tag: "Brand / Campaign", tone: "#4cc9b0" },
           { name: "Kiln Coffee", tag: "Packaging / Web", tone: "#6b9bd1" },
           { name: "Vesper Hotels", tag: "Digital / Motion", tone: "#d17a6b" },
@@ -237,7 +237,7 @@ export function FoundryStudio() {
           <button
             key={p.name}
             onClick={() => toast(`${p.name} case study opens in the full site`)}
-            className="group rounded-2xl bg-ink-800 p-6 text-left transition hover:bg-ink-750"
+            className="group rounded-xl bg-ink-800 p-6 text-left transition hover:bg-ink-750"
           >
             <div
               className="h-28 rounded-xl"

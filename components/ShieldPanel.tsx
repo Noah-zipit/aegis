@@ -44,13 +44,13 @@ export default function ShieldPanel({ align = "below" }: { align?: "below" | "ab
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -6, scale: 0.98 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
-          className={`absolute z-50 w-80 overflow-hidden rounded-2xl border border-ink-700 bg-ink-850 shadow-2xl shadow-black/60 ${
+          className={`absolute z-50 w-80 overflow-hidden rounded-2xl border border-ink-600 bg-ink-850 ${
             align === "below" ? "right-2 top-full mt-1.5 md:right-3" : "bottom-full mb-1.5 right-2"
           }`}
           role="dialog"
           aria-label="Privacy shield for this site"
         >
-          <div className="flex items-center justify-between border-b border-ink-700 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-ink-600 px-4 py-3">
             <div className="flex items-center gap-2">
               <ShieldCheck size={16} style={{ color: "var(--accent)" }} aria-hidden />
               <p className="text-sm font-semibold text-mist-100">Shield is up</p>

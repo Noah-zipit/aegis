@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink-950: #0b0b0d;
-  --color-ink-900: #121215;
-  --color-ink-850: #16161a;
-  --color-ink-800: #1c1c21;
-  --color-ink-750: #232329;
-  --color-ink-700: #2e2e36;
-  --color-ink-600: #3f3f49;
-  --color-mist-100: #f2f2f4;
-  --color-mist-300: #c9c9d1;
-  --color-mist-500: #8e8e99;
-  --color-mist-600: #6b6b75;
+  /* Raycast surface ladder */
+  --color-ink-950: #07080a; /* canvas */
+  --color-ink-900: #0d0d0d; /* surface */
+  --color-ink-850: #101111; /* surface-elevated */
+  --color-ink-800: #121212; /* surface-card */
+  --color-ink-750: #161617;
+  --color-ink-700: #1e1f20; /* hover / selection fill */
+  --color-ink-600: #242728; /* hairline */
+  /* Raycast text scale */
+  --color-mist-100: #f4f4f6; /* ink */
+  --color-mist-300: #cdcdcd; /* body */
+  --color-mist-500: #9c9c9d; /* mute */
+  --color-mist-600: #6a6b6c; /* ash */
 
-  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
-  --accent: #d9a441;
-  --accent-soft: rgba(217, 164, 65, 0.12);
+  --accent: #ff5757;
+  --accent-soft: rgba(255, 87, 87, 0.12);
+  --brand-gradient: linear-gradient(135deg, #ff5757 0%, #a1131a 100%);
 }
 
 html,
@@ -28,6 +31,7 @@ body {
   background: var(--color-ink-950);
   color: var(--color-mist-100);
   font-family: var(--font-sans);
+  font-feature-settings: "calt", "kern", "liga", "ss03";
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
@@ -73,4 +77,10 @@ input:focus-visible {
 
 .tab-dragging {
   cursor: grabbing;
+}
+
+/* Aegis brand mark — red signature gradient, white glyph */
+.logo-mark {
+  background: var(--brand-gradient);
+  color: #ffffff;
 }

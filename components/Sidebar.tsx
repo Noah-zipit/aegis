@@ -125,7 +125,7 @@ export default function Sidebar() {
 
   if (sidebarCollapsed) {
     return (
-      <div className="flex w-14 shrink-0 flex-col items-center gap-2 border-r border-ink-800 bg-ink-900 py-3">
+      <div className="flex w-14 shrink-0 flex-col items-center gap-2 border-r border-ink-600 bg-ink-900 py-3">
         <button
           onClick={() => setSidebarCollapsed(false)}
           aria-label="Expand sidebar"
@@ -141,8 +141,7 @@ export default function Sidebar() {
           <Plus size={18} />
         </button>
         <div
-          className="mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-ink-950"
-          style={{ background: "var(--accent)" }}
+          className="logo-mark mt-1 flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
           aria-hidden
         >
           A
@@ -156,15 +155,14 @@ export default function Sidebar() {
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="flex w-60 shrink-0 flex-col border-r border-ink-800 bg-ink-900"
+      className="flex w-60 shrink-0 flex-col border-r border-ink-600 bg-ink-900"
       aria-label="Browser sidebar"
     >
       {/* brand */}
       <div className="flex items-center justify-between px-4 pb-2 pt-4">
         <div className="flex items-center gap-2.5">
           <div
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-ink-950"
-            style={{ background: "var(--accent)" }}
+            className="logo-mark flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold"
             aria-hidden
           >
             A
@@ -329,7 +327,7 @@ export default function Sidebar() {
       </div>
 
       {/* library links */}
-      <div className="border-t border-ink-800 px-3 py-3">
+      <div className="border-t border-ink-600 px-3 py-3">
         <div className="grid grid-cols-3 gap-1">
           {VIEW_LINKS.map((l) => (
             <button

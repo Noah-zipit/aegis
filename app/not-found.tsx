@@ -12,8 +12,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-6 rounded-lg px-4 py-2.5 text-sm font-semibold text-ink-950 transition hover:opacity-90"
-        style={{ background: "var(--accent)" }}
+        className="mt-6 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-mist-300"
       >
         Back to Aegis
       </Link>

@@ -26,7 +26,7 @@ import { useBrowser, type ViewKey } from "../lib/store";
 function Empty({ icon: Icon, title, body }: { icon: React.ElementType; title: string; body: string }) {
   return (
     <div className="flex flex-col items-center px-6 py-20 text-center">
-      <div className="rounded-2xl bg-ink-800 p-4">
+      <div className="rounded-xl bg-ink-800 p-4">
         <Icon size={24} className="text-mist-500" aria-hidden />
       </div>
       <h3 className="mt-4 font-semibold text-mist-100">{title}</h3>
@@ -107,11 +107,11 @@ export function HistoryView() {
         groups.map((g) => (
           <div key={g.label} className="mt-6">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">{g.label}</p>
-            <div className="mt-2 overflow-hidden rounded-xl border border-ink-800">
+            <div className="mt-2 overflow-hidden rounded-xl border border-ink-600">
               {g.items.map((h, i) => (
                 <div
                   key={h.id}
-                  className={`group flex items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-ink-800" : ""} transition hover:bg-ink-800`}
+                  className={`group flex items-center gap-3 px-4 py-3 ${i > 0 ? "border-t border-ink-600" : ""} transition hover:bg-ink-800`}
                 >
                   <button onClick={() => openTab(h.pageKey)} className="min-w-0 flex-1 text-left">
                     <span className="block truncate text-sm text-mist-100">{h.title}</span>
@@ -178,7 +178,7 @@ export function BookmarksView() {
               {filtered
                 .filter((b) => b.folder === f)
                 .map((b) => (
-                  <div key={b.id} className="group flex items-center gap-3 rounded-xl border border-ink-800 px-4 py-3 transition hover:border-ink-600">
+                  <div key={b.id} className="group flex items-center gap-3 rounded-xl border border-ink-600 px-4 py-3 transition hover:border-ink-600">
                     <button onClick={() => openTab(b.pageKey)} className="min-w-0 flex-1 text-left">
                       {editingId === b.id ? (
                         <input
@@ -256,7 +256,7 @@ export function DownloadsView() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="rounded-xl border border-ink-800 px-4 py-3"
+                className="rounded-xl border border-ink-600 px-4 py-3"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
@@ -384,7 +384,7 @@ export function PrivacyView() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="rounded-2xl border border-ink-800 bg-ink-900 p-4"
+            className="rounded-xl border border-ink-600 bg-ink-900 p-4"
           >
             <c.icon size={17} className="text-mist-500" aria-hidden />
             <p className="mt-2.5 text-2xl font-semibold text-mist-100">{c.value}</p>
@@ -397,7 +397,7 @@ export function PrivacyView() {
       <h3 className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Protection
       </h3>
-      <div className="mt-2 overflow-hidden rounded-2xl border border-ink-800">
+      <div className="mt-2 overflow-hidden rounded-xl border border-ink-600">
         {toggles.map((t, i) => (
           <button
             key={t.key}
@@ -406,7 +406,7 @@ export function PrivacyView() {
               toast(`${t.label} ${!s[t.key] ? "enabled" : "disabled"}`);
             }}
             aria-pressed={s[t.key]}
-            className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-ink-800 ${i > 0 ? "border-t border-ink-800" : ""}`}
+            className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-ink-800 ${i > 0 ? "border-t border-ink-600" : ""}`}
           >
             <span>
               <span className="block text-sm font-medium text-mist-100">{t.label}</span>
@@ -426,9 +426,9 @@ export function PrivacyView() {
       <h3 className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Most blocked domains
       </h3>
-      <div className="mt-2 overflow-hidden rounded-2xl border border-ink-800">
+      <div className="mt-2 overflow-hidden rounded-xl border border-ink-600">
         {BLOCKED_SAMPLE.map((b, i) => (
-          <div key={b.name} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-ink-800" : ""}`}>
+          <div key={b.name} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? "border-t border-ink-600" : ""}`}>
             <div>
               <p className="font-mono text-[13px] text-mist-100">{b.name}</p>
               <p className="text-xs text-mist-600">{b.type}</p>
@@ -440,7 +440,7 @@ export function PrivacyView() {
 
       <button
         onClick={() => setView("about")}
-        className="mt-6 w-full rounded-xl border border-ink-700 px-4 py-3 text-sm text-mist-300 transition hover:border-mist-600 hover:text-mist-100"
+        className="mt-6 w-full rounded-xl border border-ink-600 px-4 py-3 text-sm text-mist-300 transition hover:border-mist-600 hover:text-mist-100"
       >
         Why Aegis exists — read the story
       </button>
@@ -458,8 +458,7 @@ export function AboutView() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 md:px-6">
       <div
-        className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-bold text-ink-950"
-        style={{ background: "var(--accent)" }}
+        className="logo-mark flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold"
         aria-hidden
       >
         A
@@ -502,7 +501,7 @@ export function AboutView() {
           ["0", "trackers phoned home"],
           ["100%", "on-device AI"],
         ].map(([v, l]) => (
-          <div key={l} className="rounded-2xl border border-ink-800 bg-ink-900 p-4">
+          <div key={l} className="rounded-xl border border-ink-600 bg-ink-900 p-4">
             <p className="text-xl font-semibold text-mist-100">{v}</p>
             <p className="mt-0.5 text-xs text-mist-500">{l}</p>
           </div>
@@ -512,8 +511,7 @@ export function AboutView() {
       <div className="mt-8 flex flex-wrap gap-3">
         <button
           onClick={openGitHub}
-          className="flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-ink-950 transition hover:opacity-90"
-          style={{ background: "var(--accent)" }}
+          className="flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-mist-300"
         >
           <ExternalLink size={15} /> GitHub repository
         </button>
@@ -534,10 +532,9 @@ export function AboutView() {
 /* ---------------- settings ---------------- */
 
 const ACCENTS = [
-  { name: "Amber", value: "#d9a441" },
-  { name: "Teal", value: "#4cc9b0" },
-  { name: "Steel", value: "#6b9bd1" },
-  { name: "Clay", value: "#d17a6b" },
+  { name: "Crimson", value: "#ff5757" },
+  { name: "Ember", value: "#ff6161" },
+  { name: "Blood", value: "#a1131a" },
 ];
 
 const ENGINES = ["Aegis", "DuckDuckGo", "Brave", "Google"];
@@ -554,7 +551,7 @@ export function SettingsView() {
       <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Appearance
       </h3>
-      <div className="mt-2 rounded-2xl border border-ink-800 p-4">
+      <div className="mt-2 rounded-xl border border-ink-600 p-4">
         <p className="text-sm font-medium text-mist-100">Accent color</p>
         <p className="text-[13px] text-mist-500">Dark minimal stays — pick the one highlight.</p>
         <div className="mt-3 flex gap-2.5">
@@ -575,7 +572,7 @@ export function SettingsView() {
       <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Search
       </h3>
-      <div className="mt-2 rounded-2xl border border-ink-800 p-4">
+      <div className="mt-2 rounded-xl border border-ink-600 p-4">
         <p className="text-sm font-medium text-mist-100">Default search engine</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {ENGINES.map((e) => (
@@ -586,7 +583,7 @@ export function SettingsView() {
               className={`rounded-xl border px-4 py-2.5 text-sm transition ${
                 s.searchEngine === e
                   ? "border-transparent font-medium text-mist-100"
-                  : "border-ink-700 text-mist-500 hover:border-ink-600 hover:text-mist-300"
+                  : "border-ink-600 text-mist-500 hover:border-ink-600 hover:text-mist-300"
               }`}
               style={s.searchEngine === e ? { background: "var(--accent-soft)", color: "var(--accent)" } : undefined}
             >
@@ -599,7 +596,7 @@ export function SettingsView() {
       <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Privacy
       </h3>
-      <div className="mt-2 rounded-2xl border border-ink-800 p-4">
+      <div className="mt-2 rounded-xl border border-ink-600 p-4">
         <p className="text-sm text-mist-500">
           Tracker blocking, ad blocking, prefetching and HTTPS-only are
           managed in the Privacy Report.
@@ -615,7 +612,7 @@ export function SettingsView() {
       <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-mist-600">
         Prototype
       </h3>
-      <div className="mt-2 rounded-2xl border border-ink-800 p-4">
+      <div className="mt-2 rounded-xl border border-ink-600 p-4">
         <p className="text-sm font-medium text-mist-100">Reset prototype data</p>
         <p className="text-[13px] text-mist-500">Clears tabs, history, bookmarks, downloads and stats stored in this browser.</p>
         {!confirmReset ? (
@@ -645,7 +642,7 @@ export function SettingsView() {
 
       <button
         onClick={() => setView("about" as ViewKey)}
-        className="mt-6 w-full rounded-xl border border-ink-700 px-4 py-3 text-sm text-mist-300 transition hover:border-mist-600 hover:text-mist-100"
+        className="mt-6 w-full rounded-xl border border-ink-600 px-4 py-3 text-sm text-mist-300 transition hover:border-mist-600 hover:text-mist-100"
       >
         About Aegis
       </button>

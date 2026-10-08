@@ -106,7 +106,7 @@ export function metaForPageKey(pageKey: string): {
       return {
         title: "The quiet rebellion against the 250MB browser — The Meridian",
         url: "https://meridian.press/quiet-rebellion",
-        dot: "#d9a441",
+        dot: "#ff5757",
       };
     if (site === "aura")
       return {
@@ -153,7 +153,7 @@ let initCounter = 0;
 const initId = () => `init-${++initCounter}`;
 const BASE_TS = 1760000000000;
 
-const DOT_POOL = ["#d9a441", "#4cc9b0", "#6b9bd1", "#d17a6b", "#9db06b"];
+const DOT_POOL = ["#ff5757", "#9c9c9d", "#6a6b6c", "#c9c9d1", "#434345"];
 
 function makeTab(pageKey: string, dot?: string, deterministic = false): TabState {
   const meta = metaForPageKey(pageKey);
@@ -185,7 +185,7 @@ interface Persisted {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-  accent: "#d9a441",
+  accent: "#ff5757",
   searchEngine: "Aegis",
   adBlock: true,
   trackerBlock: true,
@@ -200,15 +200,15 @@ function defaultSpaces(): Space[] {
     {
       id: "personal",
       name: "Personal",
-      color: "#d9a441",
+      color: "#ff5757",
       tabs: [t1, t2],
       activeTabId: t1.id,
     },
-    { id: "work", name: "Work", color: "#6b9bd1", tabs: [], activeTabId: null },
+    { id: "work", name: "Work", color: "#9c9c9d", tabs: [], activeTabId: null },
     {
       id: "research",
       name: "Research",
-      color: "#4cc9b0",
+      color: "#6a6b6c",
       tabs: [],
       activeTabId: null,
     },

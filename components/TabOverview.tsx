@@ -54,10 +54,10 @@ export default function TabOverview() {
                     switchTab(t.id);
                     setOverviewOpen(false);
                   }}
-                  className={`group relative aspect-[4/3] rounded-2xl border p-3 text-left transition ${
+                  className={`group relative aspect-[4/3] rounded-xl border p-3 text-left transition ${
                     t.id === activeTab?.id
                       ? "border-ink-600 bg-ink-800"
-                      : "border-ink-800 bg-ink-900 hover:border-ink-600"
+                      : "border-ink-600 bg-ink-900 hover:border-ink-600"
                   }`}
                 >
                   <span
@@ -96,7 +96,7 @@ export default function TabOverview() {
                   openTab("newtab");
                   setOverviewOpen(false);
                 }}
-                className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-ink-600 text-mist-500 transition hover:border-mist-600 hover:text-mist-300"
+                className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-ink-600 text-mist-500 transition hover:border-mist-600 hover:text-mist-300"
               >
                 <Plus size={20} />
                 <span className="text-sm">New tab</span>

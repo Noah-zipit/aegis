@@ -177,7 +177,7 @@ function AddressBar({ mobile = false }: { mobile?: boolean }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-xl border border-ink-700 bg-ink-850 shadow-2xl shadow-black/60"
+            className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-xl border border-ink-600 bg-ink-850"
             role="listbox"
             aria-label="Address bar suggestions"
           >
@@ -235,7 +235,7 @@ function MenuDropdown({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -4, scale: 0.98 }}
       transition={{ duration: 0.15 }}
-      className="absolute right-0 top-full z-50 mt-1.5 w-56 overflow-hidden rounded-xl border border-ink-700 bg-ink-850 py-1.5 shadow-2xl shadow-black/60"
+      className="absolute right-0 top-full z-50 mt-1.5 w-56 overflow-hidden rounded-xl border border-ink-600 bg-ink-850 py-1.5"
       role="menu"
     >
       {items.map((it) => (
@@ -360,7 +360,7 @@ export function MobileToolbar() {
     "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-mist-300 transition active:bg-ink-800 disabled:opacity-30";
 
   return (
-    <div className="relative border-t border-ink-800 bg-ink-900 px-2 pb-[env(safe-area-inset-bottom)] pt-1 md:hidden">
+    <div className="relative border-t border-ink-600 bg-ink-900 px-2 pb-[env(safe-area-inset-bottom)] pt-1 md:hidden">
       <div className="mb-1 px-1">
         <AddressBar mobile />
       </div>
@@ -402,7 +402,7 @@ export function MobileToolbar() {
 export function ViewTopBar({ title }: { title: string }) {
   const { setView } = useBrowser();
   return (
-    <div className="flex items-center gap-2 border-b border-ink-800 px-4 py-3">
+    <div className="flex items-center gap-2 border-b border-ink-600 px-4 py-3">
       <button
         onClick={() => setView(null)}
         className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-mist-500 transition hover:bg-ink-800 hover:text-mist-100"

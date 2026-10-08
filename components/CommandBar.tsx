@@ -122,10 +122,10 @@ export default function CommandBar() {
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, y: -8, opacity: 0 }}
             transition={{ type: "spring", stiffness: 480, damping: 38 }}
-            className="w-full max-w-lg overflow-hidden rounded-2xl border border-ink-700 bg-ink-850 shadow-2xl shadow-black/70"
+            className="w-full max-w-lg overflow-hidden rounded-2xl border border-ink-600 bg-ink-850"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-2.5 border-b border-ink-700 px-4">
+            <div className="flex items-center gap-2.5 border-b border-ink-600 px-4">
               <Command size={16} className="text-mist-600" aria-hidden />
               <input
                 ref={inputRef}
