@@ -13,21 +13,25 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
-  AI_MODEL_ID,
+  AI_MODEL_LABEL,
   AI_MODEL_SIZE_MB,
   AI_SYSTEM_PROMPT,
+  beginGeneration,
+  chatCompletion,
   getEngine,
-  hasWebGPU,
+  hasWebAssembly,
   isEngineReady,
   stopGeneration,
-  type MLCEngineInterface,
+  type Wllama,
+  type WllamaChatMessage,
 } from "../lib/ai-engine";
 import { useKeyboardHeight } from "../lib/useKeyboard";
 
 /* ------------------------------------------------------------------ */
-/*  Aegis AI — on-device chat. The SmolLM2-360M model downloads once   */
-/*  (~300MB), caches in the browser, then runs fully offline on        */
-/*  WebGPU via WebLLM. No API keys, no server, no fake responses.      */
+/*  Aegis AI — on-device chat. The SmolLM2-360M GGUF downloads once    */
+/*  (~218MB), caches in the browser, then runs fully offline on the    */
+/*  phone's CPU via wllama (llama.cpp → WASM). No WebGPU, no API      */
+/*  keys, no server, no fake responses.                               */
 /* ------------------------------------------------------------------ */
 
 interface ChatMsg {
@@ -36,7 +40,7 @@ interface ChatMsg {
   ts: number;
 }
 
-type Phase = "checking" | "no-webgpu" | "downloading" | "ready" | "error";
+type Phase = "checking" | "downloading" | "ready" | "error";
 
 const LS_KEY = "aegis-ai-chat-v1";
 
@@ -67,7 +71,7 @@ export default function AIChat() {
   const [messages, setMessages] = useState<ChatMsg[]>(loadHistory);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
-  const engineRef = useRef<MLCEngineInterface | null>(null);
+  const engineRef = useRef<Wllama | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const kb = useKeyboardHeight();
 
@@ -75,8 +79,11 @@ export default function AIChat() {
   useEffect(() => {
     let cancelled = false;
     const boot = async () => {
-      if (!hasWebGPU()) {
-        setPhase("no-webgpu");
+      if (!hasWebAssembly()) {
+        setErrorMsg(
+          "This browser doesn't support WebAssembly, which the on-device engine needs."
+        );
+        setPhase("error");
         return;
       }
       if (isEngineReady()) {
@@ -93,8 +100,8 @@ export default function AIChat() {
       }
       setPhase("downloading");
       try {
-        const engine = await getEngine((report) => {
-          if (!cancelled) setProgress(report.progress ?? 0);
+        const engine = await getEngine((fraction) => {
+          if (!cancelled) setProgress(fraction);
         });
         engineRef.current = engine;
         if (!cancelled) setPhase("ready");
@@ -130,50 +137,53 @@ export default function AIChat() {
 
   const send = async (raw: string) => {
     const content = raw.trim();
-    const engine = engineRef.current;
-    if (!content || streaming || phase !== "ready" || !engine) return;
+    const wllama = engineRef.current;
+    if (!content || streaming || phase !== "ready" || !wllama) return;
     const userMsg = makeMsg("user", content);
     const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setStreaming(true);
     setMessages((m) => [...m, makeMsg("assistant", "")]);
+    const signal = beginGeneration();
     try {
-      const chunks = await engine.chat.completions.create({
-        messages: [
-          { role: "system", content: AI_SYSTEM_PROMPT },
-          ...next.map((m) => ({
-            role: m.role as "user" | "assistant",
-            content: m.content,
-          })),
-        ],
-        temperature: 0.7,
-        max_tokens: 512,
-        stream: true,
-      });
-      let full = "";
-      for await (const chunk of chunks) {
-        full += chunk.choices[0]?.delta?.content ?? "";
-        const snapshot = full;
+      const chatMessages: WllamaChatMessage[] = [
+        { role: "system", content: AI_SYSTEM_PROMPT },
+        ...next.map((m) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+      ];
+      const full = await chatCompletion(
+        wllama,
+        chatMessages,
+        (snapshot) => {
+          setMessages((m) => {
+            const copy = [...m];
+            copy[copy.length - 1] = { ...copy[copy.length - 1], content: snapshot };
+            return copy;
+          });
+        },
+        signal
+      );
+      if (!full.trim()) throw new Error("empty response");
+    } catch (e) {
+      const aborted =
+        e instanceof Error &&
+        (e.name === "AbortError" || e.name === "WllamaAbortError");
+      if (!aborted) {
         setMessages((m) => {
           const copy = [...m];
-          copy[copy.length - 1] = { ...copy[copy.length - 1], content: snapshot };
+          const last = copy[copy.length - 1];
+          if (last && last.role === "assistant" && !last.content.trim()) {
+            copy[copy.length - 1] = {
+              ...last,
+              content: "Couldn't generate a reply — try again.",
+            };
+          }
           return copy;
         });
       }
-      if (!full.trim()) throw new Error("empty response");
-    } catch {
-      setMessages((m) => {
-        const copy = [...m];
-        const last = copy[copy.length - 1];
-        if (last && last.role === "assistant" && !last.content.trim()) {
-          copy[copy.length - 1] = {
-            ...last,
-            content: "Couldn't generate a reply — try again.",
-          };
-        }
-        return copy;
-      });
     } finally {
       setStreaming(false);
     }
@@ -184,12 +194,15 @@ export default function AIChat() {
     setProgress(0);
     setPhase("checking");
     // Re-run the boot effect.
-    if (!hasWebGPU()) {
-      setPhase("no-webgpu");
+    if (!hasWebAssembly()) {
+      setErrorMsg(
+        "This browser doesn't support WebAssembly, which the on-device engine needs."
+      );
+      setPhase("error");
       return;
     }
     setPhase("downloading");
-    getEngine((report) => setProgress(report.progress ?? 0))
+    getEngine((fraction) => setProgress(fraction))
       .then((engine) => {
         engineRef.current = engine;
         setPhase("ready");
@@ -225,7 +238,7 @@ export default function AIChat() {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-mist-100">Aegis AI</p>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-mist-600">
-            On-device · SmolLM2 360M
+            On-device · {AI_MODEL_LABEL}
           </p>
         </div>
         {messages.length > 0 && phase === "ready" && (
@@ -245,22 +258,6 @@ export default function AIChat() {
           <Centered>
             <PulseDots />
             <p className="mt-4 text-sm text-mist-500">Waking up the on-device engine…</p>
-          </Centered>
-        )}
-
-        {phase === "no-webgpu" && (
-          <Centered>
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-ink-600 bg-ink-800 text-mist-400">
-              <TriangleAlert size={22} aria-hidden />
-            </span>
-            <p className="mt-4 max-w-xs text-center text-sm font-medium text-mist-100">
-              This device can&apos;t run on-device AI
-            </p>
-            <p className="mt-1.5 max-w-xs text-center text-[13px] leading-relaxed text-mist-500">
-              Aegis AI needs WebGPU, which this browser doesn&apos;t provide.
-              Try the latest Chrome or Edge — your words never leave the phone
-              either way, because there is no server to send them to.
-            </p>
           </Centered>
         )}
 
@@ -328,6 +325,10 @@ export default function AIChat() {
                 <p className="mt-1.5 max-w-xs text-[13px] leading-relaxed text-mist-500">
                   A small model running entirely on this phone. No account, no
                   API key, no cloud.
+                </p>
+                <p className="mt-1.5 max-w-xs text-[13px] leading-relaxed text-mist-600">
+                  Running on your phone&apos;s CPU — slower than GPU, but works
+                  on any phone, fully offline after download.
                 </p>
                 <div className="mt-6 grid w-full gap-2">
                   {[
@@ -405,7 +406,7 @@ export default function AIChat() {
           />
           {streaming ? (
             <button
-              onClick={() => stopGeneration(engineRef.current)}
+              onClick={() => stopGeneration()}
               aria-label="Stop generating"
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink-950 transition active:scale-95"
               style={{ background: "var(--brand-gradient)" }}
@@ -458,4 +459,4 @@ function PulseDots({ small = false }: { small?: boolean }) {
 
 /** Re-exported for the page-key registry. */
 export const AI_PAGE_KEY = "ai";
-export const AI_MODEL_LABEL = AI_MODEL_ID;
+export { AI_MODEL_LABEL };

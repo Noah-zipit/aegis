@@ -95,7 +95,7 @@ export interface Toast {
    real top-level navigation for them, exactly like a browser.
    "search:" entries render Brave Search results natively in-app (needs a
    Brave Search API key in Settings).
-   "ai" renders the on-device Aegis AI chat (WebLLM + SmolLM2-360M). */
+   "ai" renders the on-device Aegis AI chat (wllama llama.cpp WASM + SmolLM2-360M GGUF). */
 
 /* Real search engines. The Settings choice maps straight to these. */
 export const SEARCH_ENGINES: Record<string, string> = {
