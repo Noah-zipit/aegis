@@ -25,5 +25,13 @@
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "Aegis \u2014 lightweight, privacy-first mobile browser. UI/UX prototype v0.",
+  "author": "Ashar Qaisar",
+  "keywords": [
+    "browser",
+    "privacy",
+    "prototype",
+    "nextjs"
+  ]
 }
